@@ -4,12 +4,14 @@ gpg = gnupg.GPG()
 print(gpg.list_keys(secret=True))
 
 def import_secret_key(gpg, key_path):
-    
-    import_result = gpg.import_keys_file(key_path)
+    with open(key_path, 'rb') as f:
+        key_data = f.read()
+    import_result = gpg.import_keys(key_data)
     if import_result:
         print("Key imported successfully. Key count:", len(import_result.fingerprints))
     else:
         print("Failed to import key.")
+
 
 
 
@@ -18,7 +20,9 @@ def import_secret_key(gpg, key_path):
 
 def encrypt_message(public_key_path, message):
     # Import public key
-    import_result = gpg.import_keys_file(public_key_path)
+    with open(public_key_path, 'rb') as f:
+        key_data = f.read()
+    import_result = gpg.import_keys(key_data)
     
     if not import_result:
         return "Error importing public key"
@@ -41,33 +45,23 @@ def decrypt_message(encrypted_message, passphrase):
         return f"Decryption failed: {decrypted_data.status}, {decrypted_data.stderr}"
 
 # Paths to your public and private keys
-public_key_path = '1.asc'
-private_key_path = '2p.asc' # Note: This is not used directly in code but assumed to be in your keyring
+public_key_path = 'keypu.asc'
+private_key_path = 'keypr.asc' # Note: This is not used directly in code but assumed to be in your keyring
 
 # Your passphrase for the private key
-passphrase = 'mykey'
+passphrase = 'keyhello'
 
 # The message you want to encrypt
 message = 'Hello, GPG!'
 
-import_secret_key(gpg,'2p.asc')
 
-# cheking listing
-print(gpg.list_keys(secret=True))
+import_secret_key(gpg,'keypr.asc')
 # Encrypt the message
 encrypted_message = encrypt_message(public_key_path, message)
 print("Encrypted Message:\n", encrypted_message)
 
+print('Listing keys',gpg.list_keys(secret=True))
 # Decrypt the message
 # Make sure the private key corresponding to the public key is imported to your keyring
 decrypted_message = decrypt_message(encrypted_message, passphrase)
 print("Decrypted Message:\n", decrypted_message)
-
-
-
-
-
-
-
-
-
