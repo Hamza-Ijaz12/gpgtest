@@ -18,9 +18,7 @@ def import_secret_key(gpg, key_path):
 
 def encrypt_message(public_key_path, message):
     # Import public key
-    with open(public_key_path, 'rb') as f:
-        key_data = f.read()
-    import_result = gpg.import_keys(key_data)
+    import_result = gpg.import_keys_file(public_key_path)
     
     if not import_result:
         return "Error importing public key"
@@ -53,6 +51,9 @@ passphrase = 'mykey'
 message = 'Hello, GPG!'
 
 import_secret_key(gpg,'2p.asc')
+
+# cheking listing
+print(gpg.list_keys(secret=True))
 # Encrypt the message
 encrypted_message = encrypt_message(public_key_path, message)
 print("Encrypted Message:\n", encrypted_message)
